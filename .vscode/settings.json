@@ -2,6 +2,7 @@
 	"dotnet.defaultSolution": "PiCalculator.sln",
 	"cSpell.words": [
 		"François",
+		"Viete",
 		"Viète's"
 	]
 }
