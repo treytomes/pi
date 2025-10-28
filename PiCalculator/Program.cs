@@ -17,35 +17,97 @@ public static class Program
 		var pi0 = VietePi(HeronSqrt);
 		Console.WriteLine($"Viète's PI           = {pi0}");
 
-		var pi1 = GregoryLeibnizPi();
-		Console.WriteLine($"Gregory-Leibniz's PI = {pi1}");
+		// var pi1 = GregoryLeibnizPi();
+		// Console.WriteLine($"Gregory-Leibniz's PI = {pi1}");
+
+		Console.WriteLine(ToString(5, 16));
+		Console.WriteLine(ToString(15, 16));
+		Console.WriteLine(ToString(16, 16));
+		Console.WriteLine(ToString(0x4A, 16));
+		Console.WriteLine(ToString(0x6B9F, 16));
+		Console.WriteLine(ToString(10.5M, 10));
+		Console.WriteLine(ToString(123.4567M, 10));
+		Console.WriteLine(ToString(1.000001M, 10));
+
+
+		Console.WriteLine(1M / 3M);
+		Console.WriteLine(ToString(1M / 3M, 3));
+		Console.WriteLine(ToString(1M / 3M, 5));
+		Console.WriteLine(ToString(1M / 3M, 7));
+
+		var pi = 3.1415926535897932384626433832795028841971693993751058M;
+		Console.WriteLine(pi);
+		Console.WriteLine(ToString(pi, 10));
+		Console.WriteLine(ToString(pi, 2));
+		Console.WriteLine(ToString(pi, 3));
+		Console.WriteLine(ToString(pi, 5));
+		Console.WriteLine(ToString(pi, 7));
+		Console.WriteLine(ToString(pi, 9));
+		Console.WriteLine(ToString(pi, 11));
+		Console.WriteLine(ToString(pi, 13));
+	}
+
+	private static string ToString(decimal value, int b)
+	{
+		var digits = new List<char>();
+
+		var whole = (int)decimal.Round(value);
+		var frac = (value - whole);
+
+		while (whole > 0)
+		{
+			var v0 = whole % b;
+			if (v0 < 10)
+			{
+				digits.Add((char)(v0 + '0'));
+			}
+			else
+			{
+				digits.Add((char)(v0 - 10 + 'A'));
+			}
+
+			whole /= b;
+		}
+		digits.Reverse();
+
+		if (frac != 0)
+		{
+			digits.Add('.');
+
+			var counter = 100;
+			while (frac != 0 && counter >= 0)
+			{
+				frac *= b;
+				var v0 = (int)frac % b;
+				// Console.WriteLine(v0);
+				if (v0 < 10)
+				{
+					digits.Add((char)(v0 + '0'));
+				}
+				else
+				{
+					digits.Add((char)(v0 - 10 + 'A'));
+				}
+
+				frac = frac - (int)frac;
+				counter--;
+			}
+		}
+
+		return string.Join(string.Empty, digits);
 	}
 
 	private static decimal GregoryLeibnizPi()
 	{
 		ConcurrentStack<decimal> values = new();
 
-		// var options = new ParallelOptions()
-		// {
-		// 	MaxDegreeOfParallelism = int.MaxValue,
-		// };
-
-		var result = Parallel.For(0, 10_000_000_000, iter =>
+		var result = Parallel.For(0, 1000, iter =>
 		{
 			var numerator = 4M;
 			var sign = (iter % 2M == 0M) ? 1M : -1M;
 			var denominator = 2M * iter + 1M;
 
 			var pi0 = sign * numerator / denominator;
-			// if (pi0 == pi)
-			// {
-			// 	return pi0;
-			// }
-
-			// pi = pi0;
-
-			// iters++;
-			// Console.WriteLine($"{iter}: {pi0}");
 
 			values.Push(pi0);
 		});
